@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="is">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Námsorð - 1 - 10 algengustu</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            background-color: #f0f4f8; 
+            margin: 0;
+            padding: 2vh 5vw; 
+            min-height: 95vh; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        .container { 
+            width: 100%; 
+            max-width: 1200px; 
+            background: white; 
+            padding: 30px 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            max-height: 100%;
+            overflow-y: auto;
+        }
+        h1 {
+            color: #1a73e8;
+            font-size: 2em;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        /* Framvindustika */
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            height: 20px;
+        }
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #34a853;
+            border-radius: 10px;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        #counter { font-size: 1.2em; color: #666; font-weight: bold; margin-bottom: 10px; }
+
+        .lang-selector {
+            margin-bottom: 20px;
+            background: #fff3e0;
+            padding: 10px 15px;
+            border-radius: 10px;
+            display: inline-block;
+            border: 1px solid #ffcc80;
+        }
+
+        .lang-selector select {
+            padding: 8px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            margin-left: 10px;
+            max-width: 300px;
+        }
+        
+        #target { 
+            font-size: 4em; 
+            margin: 10px 0; 
+            color: #222; 
+            font-weight: bold;
+        }
+        
+        #is-explanation {
+            font-size: 1.2em;
+            color: #333;
+            background-color: #e8f0fe;
+            padding: 15px 25px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+            max-width: 80%;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        .btn { 
+            padding: 12px 25px; 
+            font-size: 1.2em; 
+            margin: 5px; 
+            cursor: pointer; 
+            border: none; 
+            border-radius: 8px; 
+            background-color: #1a73e8; 
+            color: white; 
+            transition: 0.3s; 
+            font-weight: bold;
+        }
+        .btn:hover:not(:disabled) { background-color: #1557b0; transform: scale(1.02); }
+        .recording { background-color: #d93025; animation: pulse 1.5s infinite; }
+        .recording:hover { background-color: #b3140b; }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        #media-box { 
+            font-size: 1.1em; 
+            color: #444; 
+            text-align: left; 
+            background: #f8fbff; 
+            padding: 15px 30px; 
+            border-radius: 12px; 
+            line-height: 1.6; 
+            border-left: 6px solid #1a73e8; 
+            margin-top: 15px;
+            display: inline-block;
+            min-width: 70%;
+        }
+        #spoken {
+            margin-top: 15px; 
+            font-size: 1.4em;
+            font-style: italic; 
+            color: #555;
+        }
+        #result {
+            font-weight: bold; 
+            font-size: 1.8em; 
+            margin-top: 5px; 
+            color: #1a73e8;
+        }
+        .nav-btns { margin-top: 20px; }
+        
+        /* Fyrir nafnainnslátt */
+        #studentName {
+            font-size: 1.5em;
+            padding: 10px;
+            margin: 20px 0;
+            width: 80%;
+            max-width: 400px;
+            border: 2px solid #1a73e8;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .feedback-note {
+            margin-top: 40px;
+            font-size: 0.95em;
+            color: #555;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+        .feedback-note a {
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .feedback-note a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+    <h1>Námsorð - 1 - 10 algengustu</h1>
+    
+    <div class="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <div class="lang-selector">
+        <label for="languageSelect"><b>🌍 Veldu tungumál:</b></label>
+        <select id="languageSelect" onchange="updateUI()">
+            <option value="ar">Arabíska – العربية</option>
+            <option value="da">Danska – Dansk</option>
+            <option value="en" selected>Enska – English</option>
+            <option value="tl">Filippseyska – Tagalog / Filipino</option>
+            <option value="fr">Franska – Français</option>
+            <option value="zh">Kínverska – 中文</option>
+            <option value="lv">Lettneska – Latviešu</option>
+            <option value="lt">Litháíska – Lietuvių</option>
+            <option value="no">Norska – Norsk</option>
+            <option value="fa">Persneska – فارسی</option>
+            <option value="pt">Portúgalska – Português</option>
+            <option value="pl">Pólska – Polski</option>
+            <option value="ro">Rúmenska – Română</option>
+            <option value="ru">Rússneska – Русский</option>
+            <option value="es">Spænska – Español</option>
+            <option value="sv">Sænska – Svenska</option>
+            <option value="th">Tælenska – ภาษาไทย</option>
+            <option value="de">Þýska – Deutsch</option>
+            <option value="uk">Úkraínska – Українська</option>
+            <option value="vi">Víetnamska – Tiếng Việt</option>
+        </select>
+    </div>
+
+    <div id="counter"></div>
+    
+    <div id="target"></div>
+    <div id="is-explanation"></div>
+    <br>
+    <button id="record-btn" class="btn" onclick="toggleRecord()">🎤 Tala</button>
+    
+    <div id="spoken"></div>
+    <div id="result"></div>
+
+    <div id="media-box"></div>
+
+    <div class="nav-btns">
+        <button class="btn" style="background-color: #5f6368;" onclick="prevExercise()">⬅️ Fyrri</button>
+        <button class="btn" style="background-color: #5f6368;" onclick="nextExercise()">Næsta ➡️</button>
+    </div>
+
+    <div class="feedback-note">
+        Vinsamlegast sendið ábendingar á <a href="mailto:dgu@fb.is">dgu@fb.is</a>
+    </div>
+</div>
+
+<script>
+const exerciseData = [
+    { 
+        text: "og", 
+        is_exp: "<b>Útskýring:</b> Samtenging notuð til að tengja saman orð eða setningar.<br><b>Samheiti:</b> ásamt.<br><b>Dæmi:</b> Ég er að lesa <b>og</b> hlusta.",
+        translations: {
+            "ar": "<div dir='rtl' style='text-align: right;'><b>الشرح:</b> حرف عطف يُستخدم للربط بين الكلمات أو الجمل.<br><b>مرادف:</b> بالإضافة إلى ذلك.<br><b>مثال:</b> أنا أقرأ <b>و</b> أستمع.</div>",
+            "da": "<b>Forklaring:</b> Bindeord brugt til at forbinde ord eller sætninger.<br><b>Synonym:</b> samt.<br><b>Eksempel:</b> Jeg læser <b>og</b> lytter.",
+            "en": "<b>Explanation:</b> Conjunction used to connect words or sentences.<br><b>Synonym:</b> as well as.<br><b>Example:</b> I am reading <b>and</b> listening.",
+            "tl": "<b>Paliwanag:</b> Pangatnig na ginagamit upang pag-ugnayin ang mga salita o pangungusap.<br><b>Kasingkahulugan:</b> pati na rin.<br><b>Halimbawa:</b> Ako ay nagbabasa <b>at</b> nakikinig.",
+            "fr": "<b>Explication:</b> Conjonction utilisée pour relier des mots ou des phrases.<br><b>Synonyme:</b> ainsi que.<br><b>Exemple:</b> Je lis <b>et</b> j'écoute.",
+            "zh": "<b>解释：</b> 用于连接单词或句子的连词。<br><b>同义词：</b> 以及。<br><b>示例：</b> 我在阅读<b>和</b>听。",
+            "lv": "<b>Paskaidrojums:</b> Saiklis, ko lieto, lai savienotu vārdus vai teikumus.<br><b>Sinonīms:</b> kā arī.<br><b>Piemērs:</b> Es lasu <b>un</b> klausos.",
+            "lt": "<b>Paaiškinimas:</b> Jungtukas, naudojamas žodžiams ar sakiniams sujungti.<br><b>Sinonimas:</b> taip pat.<br><b>Pavyzdys:</b> Aš skaitau <b>ir</b> klausau.",
+            "no": "<b>Forklaring:</b> Konjunksjon brukt for å binde sammen ord eller setninger.<br><b>Synonym:</b> samt.<br><b>Eksempel:</b> Jeg leser <b>og</b> lytter.",
+            "fa": "<div dir='rtl' style='text-align: right;'><b>توضیح:</b> حرف ربطی که برای پیوند دادن کلمات یا جملات استفاده می‌شود.<br><b>مترادف:</b> همچنین.<br><b>مثال:</b> من در حال خواندن <b>و</b> گوش دادن هستم.</div>",
+            "pt": "<b>Explicação:</b> Conjunção usada para conectar palavras ou frases.<br><b>Sinônimo:</b> bem como.<br><b>Exemplo:</b> Eu estou lendo <b>e</b> ouvindo.",
+            "pl": "<b>Wyjaśnienie:</b> Spójnik używany do łączenia słów lub zdań.<br><b>Synonim:</b> a także.<br><b>Przykład:</b> Czytam <b>i</b> słucham.",
+            "ro": "<b>Explicație:</b> Conjuncție folosită pentru a conecta cuvinte sau propoziții.<br><b>Sinonim:</b> precum și.<br><b>Exemplu:</b> Eu citesc <b>și</b> ascult.",
+            "ru": "<b>Объяснение:</b> Союз, используемый для соединения слов или предложений.<br><b>Синоним:</b> а также.<br><b>Пример:</b> Я читаю <b>и</b> слушаю.",
+            "es": "<b>Explicación:</b> Conjunción utilizada para conectar palabras o frases.<br><b>Sinónimo:</b> así como.<br><b>Ejemplo:</b> Estoy leyendo <b>y</b> escuchando.",
+            "sv": "<b>Förklaring:</b> Konjunktion som används för att binda samman ord eller meningar.<br><b>Synonym:</b> samt.<br><b>Exempel:</b> Jag läser <b>och</b> lyssnar.",
+            "th": "<b>คำอธิบาย:</b> คำสันธานที่ใช้เชื่อมคำหรือประโยค<br><b>คำพ้องความหมาย:</b> รวมถึง<br><b>ตัวอย่าง:</b> ฉันกำลังอ่าน<b>และ</b>ฟัง",
+            "de": "<b>Erklärung:</b> Konjunktion, die verwendet wird, um Wörter oder Sätze zu verbinden.<br><b>Synonym:</b> sowie.<br><b>Beispiel:</b> Ich lese <b>und</b> höre zu.",
+            "uk": "<b>Пояснення:</b> Сполучник, що використовується для з'єднання слів або речень.<br><b>Синонім:</b> а також.<br><b>Приклад:</b> Я читаю <b>і</b> слухаю.",
+            "vi": "<b>Giải thích:</b> Liên từ được sử dụng để kết nối các từ hoặc câu.<br><b>Từ đồng nghĩa:</b> cũng như.<br><b>Ví dụ:</b> Tôi đang đọc <b>và</b> nghe."
+        }
+    },
+    { 
+        text: "það", 
+        is_exp: "<b>Útskýring:</b> Fornafn notað til að vísa í eitthvað sem hefur verið nefnt eða er almennt vitað.<br><b>Samheiti:</b> þetta.<br><b>Dæmi:</b> Ég er nemandi í FB, <b>það</b> er góður skóli.",
+        translations: {
+            "ar": "<div dir='rtl' style='text-align: right;'><b>الشرح:</b> ضمير يستخدم للإشارة إلى شيء تم ذكره أو معروف عمومًا.<br><b>مرادف:</b> هذا.<br><b>مثال:</b> أنا طالب في FB، <b>إنه</b> مدرسة جيدة.</div>",
+            "da": "<b>Forklaring:</b> Pronomen brugt til at henvise til noget, der er blevet nævnt eller er alment kendt.<br><b>Synonym:</b> dette.<br><b>Eksempel:</b> Jeg er elev på FB, <b>det</b> er en god skole.",
+            "en": "<b>Explanation:</b> Pronoun used to refer to something that has been mentioned or is generally known.<br><b>Synonym:</b> this/it.<br><b>Example:</b> I am a student at FB, <b>it</b> is a good school.",
+            "tl": "<b>Paliwanag:</b> Panghalip na ginagamit upang tukuyin ang isang bagay na nabanggit na o pangkalahatang alam.<br><b>Kasingkahulugan:</b> ito.<br><b>Halimbawa:</b> Ako ay isang mag-aaral sa FB, <b>ito</b> ay isang magandang paaralan.",
+            "fr": "<b>Explication:</b> Pronom utilisé pour se référer à quelque chose qui a été mentionné ou qui est généralement connu.<br><b>Synonyme:</b> cela.<br><b>Exemple:</b> Je suis étudiant à FB, <b>c'est</b> une bonne école.",
+            "zh": "<b>解释：</b> 代词，用于指代已提及或众所周知的事物。<br><b>同义词：</b> 这个。<br><b>示例：</b> 我是FB的学生，<b>那</b>是一所好学校。",
+            "lv": "<b>Paskaidrojums:</b> Vietniekvārds, ko lieto, lai norādītu uz kaut ko, kas ir minēts vai ir vispārzināms.<br><b>Sinonīms:</b> šis/tas.<br><b>Piemērs:</b> Esmu skolnieks FB, <b>tā</b> ir laba skola.",
+            "lt": "<b>Paaiškinimas:</b> Įvardis, naudojamas nurodyti į kažką, kas buvo paminėta arba yra visuotinai žinoma.<br><b>Sinonimas:</b> tai.<br><b>Pavyzdys:</b> Aš esu FB mokinys, <b>tai</b> yra gera mokykla.",
+            "no": "<b>Forklaring:</b> Pronomen brukt for å vise til noe som har blitt nevnt eller er allment kjent.<br><b>Synonym:</b> dette.<br><b>Eksempel:</b> Jeg er elev ved FB, <b>det</b> er en god skole.",
+            "fa": "<div dir='rtl' style='text-align: right;'><b>توضیح:</b> ضمیری که برای اشاره به چیزی که ذکر شده یا به طور کلی شناخته شده است، استفاده می‌شود.<br><b>مترادف:</b> این/آن.<br><b>مثال:</b> من دانش‌آموز FB هستم، <b>آن</b> مدرسه خوبی است.</div>",
+            "pt": "<b>Explicação:</b> Pronome usado para se referir a algo que foi mencionado ou é geralmente conhecido.<br><b>Sinônimo:</b> isso/este.<br><b>Exemplo:</b> Eu sou um estudante na FB, <b>essa</b> é uma boa escola.",
+            "pl": "<b>Wyjaśnienie:</b> Zaimek używany w odniesieniu do czegoś, co zostało wspomniane lub jest ogólnie znane.<br><b>Synonim:</b> to.<br><b>Przykład:</b> Jestem uczniem w FB, <b>to</b> jest dobra szkoła.",
+            "ro": "<b>Explicație:</b> Pronume folosit pentru a se referi la ceva care a fost menționat sau este general cunoscut.<br><b>Sinonim:</b> acesta/asta.<br><b>Exemplu:</b> Sunt elev la FB, <b>aceasta</b> este o școală bună.",
+            "ru": "<b>Объяснение:</b> Местоимение, используемое для указания на что-то упомянутое или общеизвестное.<br><b>Синоним:</b> это.<br><b>Пример:</b> Я ученик в FB, <b>это</b> хорошая школа.",
+            "es": "<b>Explicación:</b> Pronombre utilizado para referirse a algo que se ha mencionado o que es generalmente conocido.<br><b>Sinónimo:</b> esto/eso.<br><b>Ejemplo:</b> Soy estudiante en FB, <b>esa</b> es una buena escuela.",
+            "sv": "<b>Förklaring:</b> Pronomen som används för att hänvisa till något som har nämnts eller är allmänt känt.<br><b>Synonym:</b> det här.<br><b>Exempel:</b> Jag är elev på FB, <b>det</b> är en bra skola.",
+            "th": "<b>คำอธิบาย:</b> สรรพนามที่ใช้เพื่ออ้างถึงสิ่งที่กล่าวถึงหรือเป็นที่รู้จักโดยทั่วไป<br><b>คำพ้องความหมาย:</b> สิ่งนี้/มัน<br><b>ตัวอย่าง:</b> ฉันเป็นนักเรียนที่ FB <b>มัน</b>เป็นโรงเรียนที่ดี",
+            "de": "<b>Erklärung:</b> Pronomen, das verwendet wird, um sich auf etwas zu beziehen, das erwähnt wurde oder allgemein bekannt ist.<br><b>Synonym:</b> dies/das.<br><b>Beispiel:</b> Ich bin Schüler an der FB, <b>das</b> ist eine gute Schule.",
+            "uk": "<b>Пояснення:</b> Займенник, який використовується для позначення чогось згаданого або загальновідомого.<br><b>Синонім:</b> це.<br><b>Приклад:</b> Я учень у FB, <b>це</b> хороша школа.",
+            "vi": "<b>Giải thích:</b> Đại từ dùng để chỉ một điều gì đó đã được đề cập hoặc được biết đến rộng rãi.<br><b>Từ đồng nghĩa:</b> điều này/nó.<br><b>Ví dụ:</b> Tôi là học sinh ở FB, <b>đó</b> là một trường tốt."
+        }
+    },
+    { 
+        text: "á", 
+        is_exp: "<b>Útskýring:</b> Forsetning sem vísar oftast til staðsetningar eða yfirborðs.<br><b>Samheiti:</b> ofan á.<br><b>Dæmi:</b> Ég er að skrifa <b>á</b> blað.",
+        translations: {
+            "ar": "<div dir='rtl' style='text-align: right;'><b>الشرح:</b> حرف جر يشير غالبًا إلى الموقع أو السطح.<br><b>مرادف:</b> فوق.<br><b>مثال:</b> أنا أكتب <b>على</b> ورقة.</div>",
+            "da": "<b>Forklaring:</b> Forholdsord, der oftest refererer til en placering eller overflade.<br><b>Synonym:</b> ovenpå.<br><b>Eksempel:</b> Jeg skriver <b>på</b> et stykke papir.",
+            "en": "<b>Explanation:</b> Preposition usually referring to location or surface.<br><b>Synonym:</b> upon.<br><b>Example:</b> I am writing <b>on</b> a piece of paper.",
+            "tl": "<b>Paliwanag:</b> Pang-ukol na karaniwang tumutukoy sa lokasyon o ibabaw.<br><b>Kasingkahulugan:</b> sa ibabaw ng.<br><b>Halimbawa:</b> Ako ay nagsusulat <b>sa</b> papel.",
+            "fr": "<b>Explication:</b> Préposition faisant généralement référence à un lieu ou à une surface.<br><b>Synonyme:</b> sur.<br><b>Exemple:</b> J'écris <b>sur</b> une feuille de papier.",
+            "zh": "<b>解释：</b> 通常指代位置或表面的介词。<br><b>同义词：</b> 在...之上。<br><b>示例：</b> 我在纸<b>上</b>写字。",
+            "lv": "<b>Paskaidrojums:</b> Prievārds, kas parasti norāda uz atrašanās vietu vai virsmu.<br><b>Sinonīms:</b> virs.<br><b>Piemērs:</b> Es rakstu <b>uz</b> papīra.",
+            "lt": "<b>Paaiškinimas:</b> Prielinksnis, paprastai nurodantis vietą arba paviršių.<br><b>Sinonimas:</b> ant.<br><b>Pavyzdys:</b> Aš rašau <b>ant</b> popieriaus.",
+            "no": "<b>Forklaring:</b> Preposisjon som oftest refererer til plassering eller overflate.<br><b>Synonym:</b> oppå.<br><b>Eksempel:</b> Jeg skriver <b>på</b> et ark.",
+            "fa": "<div dir='rtl' style='text-align: right;'><b>توضیح:</b> حرف اضافه‌ای که معمولاً به مکان یا سطح اشاره دارد.<br><b>مترادف:</b> روی.<br><b>مثال:</b> من <b>روی</b> یک کاغذ می‌نویسم.</div>",
+            "pt": "<b>Explicação:</b> Preposição que geralmente se refere a um local ou superfície.<br><b>Sinônimo:</b> sobre.<br><b>Exemplo:</b> Estou escrevendo <b>em</b> um pedaço de papel.",
+            "pl": "<b>Wyjaśnienie:</b> Przyimek zwykle odnoszący się do lokalizacji lub powierzchni.<br><b>Synonim:</b> na wierzchu.<br><b>Przykład:</b> Piszę <b>na</b> kartce papieru.",
+            "ro": "<b>Explicație:</b> Prepoziție care se referă de obicei la locație sau suprafață.<br><b>Sinonim:</b> pe/deasupra.<br><b>Exemplu:</b> Scriu <b>pe</b> o foaie de hârtie.",
+            "ru": "<b>Объяснение:</b> Предлог, обычно указывающий на местоположение или поверхность.<br><b>Синоним:</b> поверх.<br><b>Пример:</b> Я пишу <b>на</b> листе бумаги.",
+            "es": "<b>Explicación:</b> Preposición que generalmente se refiere a una ubicación o superficie.<br><b>Sinónimo:</b> sobre.<br><b>Ejemplo:</b> Estoy escribiendo <b>en</b> un papel.",
+            "sv": "<b>Förklaring:</b> Preposition som vanligtvis refererar till plats eller yta.<br><b>Synonym:</b> ovanpå.<br><b>Exempel:</b> Jag skriver <b>på</b> ett papper.",
+            "th": "<b>คำอธิบาย:</b> คำบุพบทมักจะอ้างถึงตำแหน่งหรือพื้นผิว<br><b>คำพ้องความหมาย:</b> บน<br><b>ตัวอย่าง:</b> ฉันกำลังเขียน<b>บน</b>กระดาษ",
+            "de": "<b>Erklärung:</b> Präposition, die sich normalerweise auf einen Ort oder eine Oberfläche bezieht.<br><b>Synonym:</b> auf.<br><b>Beispiel:</b> Ich schreibe <b>auf</b> ein Stück Papier.",
+            "uk": "<b>Пояснення:</b> Прийменник, що зазвичай вказує на місцезнаходження або поверхню.<br><b>Синонім:</b> поверх.<br><b>Приклад:</b> Я пишу <b>на</b> аркуші паперу.",
+            "vi": "<b>Giải thích:</b> Giới từ thường chỉ vị trí hoặc bề mặt.<br><b>Từ đồng nghĩa:</b> trên.<br><b>Ví dụ:</b> Tôi đang viết <b>lên</b> một mảnh giấy."
+        }
+    },
+    { 
+        text: "í", 
+        is_exp: "<b>Útskýring:</b> Forsetning sem vísar til þess að vera inni í einhverju eða innan um eitthvað.<br><b>Samheiti:</b> inni í.<br><b>Dæmi:</b> Ég er <b>í</b> bol og buxum.",
+        translations: {
+            "ar": "<div dir='rtl' style='text-align: right;'><b>الشرح:</b> حرف جر يشير إلى الوجود داخل شيء ما.<br><b>مرادف:</b> بداخل.<br><b>مثال:</b> أنا (أرتدي) <b>في</b> قميص وبنطلون.</div>",
+            "da": "<b>Forklaring:</b> Forholdsord, der refererer til at være indeni noget.<br><b>Synonym:</b> indeni.<br><b>Eksempel:</b> Jeg er (klædt) <b>i</b> en t-shirt og bukser.",
+            "en": "<b>Explanation:</b> Preposition referring to being inside or within something.<br><b>Synonym:</b> inside.<br><b>Example:</b> I am <b>in</b> a t-shirt and pants.",
+            "tl": "<b>Paliwanag:</b> Pang-ukol na tumutukoy sa pagiging nasa loob ng isang bagay.<br><b>Kasingkahulugan:</b> sa loob ng.<br><b>Halimbawa:</b> Ako ay (nakasuot) <b>ng</b> t-shirt at pantalon.",
+            "fr": "<b>Explication:</b> Préposition signifiant être à l'intérieur de quelque chose.<br><b>Synonyme:</b> à l'intérieur de.<br><b>Exemple:</b> Je suis (habillé) <b>en</b> t-shirt et pantalon.",
+            "zh": "<b>解释：</b> 表示在某物内部或之中的介词。<br><b>同义词：</b> 在...里面。<br><b>示例：</b> 我（穿）<b>着</b>T恤和裤子。",
+            "lv": "<b>Paskaidrojums:</b> Prievārds, kas norāda uz atrašanos kaut kā iekšpusē.<br><b>Sinonīms:</b> iekšpusē.<br><b>Piemērs:</b> Esmu (ģērbies) krekliņā <b>un</b> biksēs.",
+            "lt": "<b>Paaiškinimas:</b> Prielinksnis, nurodantis buvimą kažko viduje.<br><b>Sinonimas:</b> viduje.<br><b>Pavyzdys:</b> Aš esu (apsirengęs) marškinėliais <b>ir</b> kelnėmis.",
+            "no": "<b>Forklaring:</b> Preposisjon som viser til å være inni noe.<br><b>Synonym:</b> inni.<br><b>Eksempel:</b> Jeg er (kledd) <b>i</b> t-skjorte og bukse.",
+            "fa": "<div dir='rtl' style='text-align: right;'><b>توضیح:</b> حرف اضافه‌ای که به بودن در داخل چیزی اشاره دارد.<br><b>مترادف:</b> درون.<br><b>مثال:</b> من <b>در</b> (لباس) تی‌شرت و شلوار هستم.</div>",
+            "pt": "<b>Explicação:</b> Preposição referente a estar dentro de algo.<br><b>Sinônimo:</b> dentro de.<br><b>Exemplo:</b> Eu estou (vestido) <b>com</b> uma camiseta e calças.",
+            "pl": "<b>Wyjaśnienie:</b> Przyimek oznaczający przebywanie w czymś lub wewnątrz czegoś.<br><b>Synonim:</b> wewnątrz.<br><b>Przykład:</b> Jestem (ubrany) <b>w</b> koszulkę i spodnie.",
+            "ro": "<b>Explicație:</b> Prepoziție referitoare la a fi în interiorul a ceva.<br><b>Sinonim:</b> înăuntru.<br><b>Exemplu:</b> Sunt (îmbrăcat) <b>în</b> tricou și pantaloni.",
+            "ru": "<b>Объяснение:</b> Предлог, указывающий на нахождение внутри чего-либо.<br><b>Синоним:</b> внутри.<br><b>Пример:</b> Я <b>в</b> футболке и штанах.",
+            "es": "<b>Explicación:</b> Preposición que se refiere a estar dentro de algo.<br><b>Sinónimo:</b> dentro de.<br><b>Ejemplo:</b> Estoy (vestido) <b>con</b> camiseta y pantalones.",
+            "sv": "<b>Förklaring:</b> Preposition som refererar till att vara inuti något.<br><b>Synonym:</b> inuti.<br><b>Exempel:</b> Jag är (klädd) <b>i</b> t-shirt och byxor.",
+            "th": "<b>คำอธิบาย:</b> คำบุพบทอ้างถึงการอยู่ข้างในหรือภายในบางสิ่งบางอย่าง<br><b>คำพ้องความหมาย:</b> ข้างใน<br><b>ตัวอย่าง:</b> ฉันอยู่<b>ใน</b>เสื้อยืดและกางเกงขายาว (สวมใส่)",
+            "de": "<b>Erklärung:</b> Präposition, die sich darauf bezieht, in etwas zu sein.<br><b>Synonym:</b> drinnen/in.<br><b>Beispiel:</b> Ich bin (gekleidet) <b>in</b> T-Shirt und Hose.",
+            "uk": "<b>Пояснення:</b> Прийменник, що вказує на перебування всередині чогось.<br><b>Синонім:</b> всередині.<br><b>Приклад:</b> Я <b>в</b> футболці та штанях.",
+            "vi": "<b>Giải thích:</b> Giới từ chỉ việc ở bên trong một cái gì đó.<br><b>Từ đồng nghĩa:</b> bên trong.<br><b>Ví dụ:</b> Tôi (mặc) <b>trong</b> áo phông và quần dài."
+        }
+    },
+    { 
+        text: "til", 
+        is_exp: "<b>Útskýring:</b> Forsetning sem gefur til kynna tilgang eða stefnu.<br><b>Samheiti:</b> í því skyni að.<br><b>Dæmi:</b> Ég skrifa <b>til</b> að muna betur.",
+        translations: {
+            "ar": "<div dir='rtl' style='text-align: right;'><b>الشرح:</b> حرف جر يدل على الغرض أو الاتجاه.<br><b>مرادف:</b> من أجل.<br><b>مثال:</b> أكتب <b>لـ</b>ـأتذكر بشكل أفضل.</div>",
+            "da": "<b>Forklaring:</b> Forholdsord, der angiver formål eller retning.<br><b>Synonym:</b> med det formål at.<br><b>Eksempel:</b> Jeg skriver <b>for at</b> huske bedre.",
+            "en": "<b>Explanation:</b> Preposition indicating purpose or direction.<br><b>Synonym:</b> in order to.<br><b>Example:</b> I write <b>to</b> remember better.",
+            "tl": "<b>Paliwanag:</b> Pang-ukol na nagpapahiwatig ng layunin o direksyon.<br><b>Kasingkahulugan:</b> upang.<br><b>Halimbawa:</b> Nagsusulat ako <b>upang</b> mas matandaan.",
+            "fr": "<b>Explication:</b> Préposition indiquant un but ou une direction.<br><b>Synonyme:</b> afin de.<br><b>Exemple:</b> J'écris <b>pour</b> mieux me souvenir.",
+            "zh": "<b>解释：</b> 表示目的或方向的介词。<br><b>同义词：</b> 为了。<br><b>示例：</b> 我写下来是<b>为了</b>记得更好。",
+            "lv": "<b>Paskaidrojums:</b> Prievārds, kas norāda uz mērķi vai virzienu.<br><b>Sinonīms:</b> lai.<br><b>Piemērs:</b> Es rakstu, <b>lai</b> labāk atcerētos.",
+            "lt": "<b>Paaiškinimas:</b> Prielinksnis, nurodantis tikslą ar kryptį.<br><b>Sinonimas:</b> tam kad.<br><b>Pavyzdys:</b> Aš rašau, <b>kad</b> geriau prisiminčiau.",
+            "no": "<b>Forklaring:</b> Preposisjon som angir hensikt eller retning.<br><b>Synonym:</b> for å.<br><b>Eksempel:</b> Jeg skriver <b>for å</b> huske bedre.",
+            "fa": "<div dir='rtl' style='text-align: right;'><b>توضیح:</b> حرف اضافه‌ای که هدف یا جهت را نشان می‌دهد.<br><b>مترادف:</b> به منظور.<br><b>مثال:</b> من می‌نویسم <b>تا (برای اینکه)</b> بهتر به یاد بیاورم.</div>",
+            "pt": "<b>Explicação:</b> Preposição que indica propósito ou direção.<br><b>Sinônimo:</b> a fim de.<br><b>Exemplo:</b> Eu escrevo <b>para</b> lembrar melhor.",
+            "pl": "<b>Wyjaśnienie:</b> Przyimek wskazujący na cel lub kierunek.<br><b>Synonim:</b> w celu.<br><b>Przykład:</b> Piszę, <b>aby (żeby)</b> lepiej pamiętać.",
+            "ro": "<b>Explicație:</b> Prepoziție care indică scopul sau direcția.<br><b>Sinonim:</b> cu scopul de a.<br><b>Exemplu:</b> Scriu <b>pentru a</b>-mi aminti mai bine.",
+            "ru": "<b>Объяснение:</b> Предлог, указывающий на цель или направление.<br><b>Синоним:</b> для того чтобы.<br><b>Пример:</b> Я пишу, <b>чтобы</b> лучше помнить.",
+            "es": "<b>Explicación:</b> Preposición que indica propósito o dirección.<br><b>Sinónimo:</b> con el fin de.<br><b>Ejemplo:</b> Escribo <b>para</b> recordar mejor.",
+            "sv": "<b>Förklaring:</b> Preposition som anger syfte eller riktning.<br><b>Synonym:</b> för att.<br><b>Exempel:</b> Jag skriver <b>för att</b> minnas bättre.",
+            "th": "<b>คำอธิบาย:</b> คำบุพบทบ่งบอกถึงวัตถุประสงค์หรือทิศทาง<br><b>คำพ้องความหมาย:</b> เพื่อที่จะ<br><b>ตัวอย่าง:</b> ฉันเขียน<b>เพื่อ</b>ให้จำได้ดีขึ้น",
+            "de": "<b>Erklärung:</b> Präposition, die einen Zweck oder eine Richtung angibt.<br><b>Synonym:</b> um zu.<br><b>Beispiel:</b> Ich schreibe, <b>um</b> mich besser zu erinnern.",
+            "uk": "<b>Пояснення:</b> Прийменник, що вказує на мету або напрямок.<br><b>Синонім:</b> для того щоб.<br><b>Приклад:</b> Я пишу, <b>щоб</b> краще пам'ятати.",
+            "vi": "<b>Giải thích:</b> Giới từ chỉ mục đích hoặc hướng đi.<br><b>Từ đồng nghĩa:</b> để.<br><b>Ví dụ:</b> Tôi viết <b>để</b> nhớ tốt hơn."
+        }
+    },
+    { 
+        text: "um", 
+        is_exp: "<b>Útskýring:</b> Forsetning sem vísar oft til efnis eða tíma.<br><b>Samheiti:</b> varðandi.<br><b>Dæmi:</b> Ég er að læra <b>um</b> Ísland.",
+        translations: {
+            "ar": "<div dir='rtl' style='text-align: right;'><b>الشرح:</b> حرف جر يشير غالباً إلى الموضوع أو الوقت.<br><b>مرادف:</b> بخصوص.<br><b>مثال:</b> أنا أتعلم <b>عن</b> أيسلندا.</div>",
+            "da": "<b>Forklaring:</b> Forholdsord, der ofte refererer til et emne eller tidspunkt.<br><b>Synonym:</b> vedrørende.<br><b>Eksempel:</b> Jeg lærer <b>om</b> Island.",
+            "en": "<b>Explanation:</b> Preposition often referring to a topic or time.<br><b>Synonym:</b> regarding.<br><b>Example:</b> I am learning <b>about</b> Iceland.",
+            "tl": "<b>Paliwanag:</b> Pang-ukol na madalas tumutukoy sa isang paksa o oras.<br><b>Kasingkahulugan:</b> tungkol sa.<br><b>Halimbawa:</b> Nag-aaral ako <b>tungkol</b> sa Iceland.",
+            "fr": "<b>Explication:</b> Préposition se référant souvent à un sujet ou au temps.<br><b>Synonyme:</b> concernant.<br><b>Exemple:</b> J'apprends des choses <b>sur (à propos de)</b> l'Islande.",
+            "zh": "<b>解释：</b> 通常指代主题或时间的介词。<br><b>同义词：</b> 关于。<br><b>示例：</b> 我正在学习<b>关于</b>冰岛的知识。",
+            "lv": "<b>Paskaidrojums:</b> Prievārds, kas bieži norāda uz tēmu vai laiku.<br><b>Sinonīms:</b> saistībā ar.<br><b>Piemērs:</b> Es mācos <b>par</b> Islandi.",
+            "lt": "<b>Paaiškinimas:</b> Prielinksnis, dažnai nurodantis temą ar laiką.<br><b>Sinonimas:</b> dėl.<br><b>Pavyzdys:</b> Aš mokausi <b>apie</b> Islandiją.",
+            "no": "<b>Forklaring:</b> Preposisjon som ofte refererer til et tema eller tidspunkt.<br><b>Synonym:</b> angående.<br><b>Eksempel:</b> Jeg lærer <b>om</b> Island.",
+            "fa": "<div dir='rtl' style='text-align: right;'><b>توضیح:</b> حرف اضافه‌ای که اغلب به موضوع یا زمان اشاره دارد.<br><b>مترادف:</b> در مورد.<br><b>مثال:</b> من دارم <b>درباره</b> ایسلند یاد می‌گیرم.</div>",
+            "pt": "<b>Explicação:</b> Preposição frequentemente referente a um tópico ou tempo.<br><b>Sinônimo:</b> a respeito de.<br><b>Exemplo:</b> Estou aprendendo <b>sobre</b> a Islândia.",
+            "pl": "<b>Wyjaśnienie:</b> Przyimek często odnoszący się do tematu lub czasu.<br><b>Synonim:</b> dotyczący.<br><b>Przykład:</b> Uczę się <b>o</b> Islandii.",
+            "ro": "<b>Explicație:</b> Prepoziție care se referă deseori la un subiect sau timp.<br><b>Sinonim:</b> referitor la.<br><b>Exemplu:</b> Învăț <b>despre</b> Islanda.",
+            "ru": "<b>Объяснение:</b> Предлог, часто указывающий на тему или время.<br><b>Синоним:</b> касательно.<br><b>Пример:</b> Я изучаю <b>о</b> (про) Исландию.",
+            "es": "<b>Explicación:</b> Preposición que a menudo se refiere a un tema o tiempo.<br><b>Sinónimo:</b> con respecto a.<br><b>Ejemplo:</b> Estoy aprendiendo <b>sobre</b> Islandia.",
+            "sv": "<b>Förklaring:</b> Preposition som ofta refererar till ett ämne eller tidpunkt.<br><b>Synonym:</b> angående.<br><b>Exempel:</b> Jag lär mig <b>om</b> Island.",
+            "th": "<b>คำอธิบาย:</b> คำบุพบทมักจะอ้างถึงหัวข้อหรือเวลา<br><b>คำพ้องความหมาย:</b> เกี่ยวกับ<br><b>ตัวอย่าง:</b> ฉันกำลังเรียนรู้<b>เกี่ยวกับ</b>ไอซ์แลนด์",
+            "de": "<b>Erklärung:</b> Präposition, die sich oft auf ein Thema oder eine Zeit bezieht.<br><b>Synonym:</b> bezüglich.<br><b>Beispiel:</b> Ich lerne etwas <b>über</b> Island.",
+            "uk": "<b>Пояснення:</b> Прийменник, що часто вказує на тему або час.<br><b>Синонім:</b> стосовно.<br><b>Приклад:</b> Я дізнаюся <b>про</b> Ісландію.",
+            "vi": "<b>Giải thích:</b> Giới từ thường chỉ một chủ đề hoặc thời gian.<br><b>Từ đồng nghĩa:</b> liên quan đến.<br><b>Ví dụ:</b> Tôi đang học <b>về</b> Iceland."
+        }
+    },
+    { 
+        text: "er", 
+        is_exp: "<b>Útskýring:</b> Sögnin 'að vera' í nútíð, notuð um 3. persónu eintölu (hann/hún/það) eða í fleiri tilfellum.<br><b>Samheiti:</b> (Tengisögn sem lýsir ástandi).<br><b>Dæmi:</b> Hann <b>er</b> kennari.",
+        translations: {
+            "ar": "<div dir='rtl' style='text-align: right;'><b>الشرح:</b> الفعل 'يكون' في المضارع، للمفرد الغائب (هو/هي/إنه).<br><b>مرادف:</b> (فعل ربط).<br><b>مثال:</b> هو <b>يكون</b> معلماً.</div>",
+            "da": "<b>Forklaring:</b> Udsagnsordet 'at være' i nutid (3. person ental).<br><b>Synonym:</b> (Beskriver tilstand).<br><b>Eksempel:</b> Han <b>er</b> lærer.",
+            "en": "<b>Explanation:</b> The verb 'to be' in present tense (3rd person singular).<br><b>Synonym:</b> (Linking verb).<br><b>Example:</b> He <b>is</b> a teacher.",
+            "tl": "<b>Paliwanag:</b> Ang pandiwang 'maging' sa kasalukuyang panahunan (pangatlong panauhang isahan).<br><b>Kasingkahulugan:</b> (Pandiwa na nag-uugnay).<br><b>Halimbawa:</b> Siya <b>ay</b> isang guro.",
+            "fr": "<b>Explication:</b> Le verbe 'être' au présent (3e personne du singulier).<br><b>Synonyme:</b> (Verbe d'état).<br><b>Exemple:</b> Il <b>est</b> professeur.",
+            "zh": "<b>解释：</b> 动词 '是' 的现在时（第三人称单数）。<br><b>同义词：</b> （系动词）。<br><b>示例：</b> 他<b>是</b>一名老师。",
+            "lv": "<b>Paskaidrojums:</b> Darbības vārds 'būt' tagadnē (3. persona vienskaitlī).<br><b>Sinonīms:</b> (Saistvārds).<br><b>Piemērs:</b> Viņš <b>ir</b> skolotājs.",
+            "lt": "<b>Paaiškinimas:</b> Veiksmažodis 'būti' esamajame laike (3-ioji asmens vienaskaita).<br><b>Sinonimas:</b> (Jungiamasis veiksmažodis).<br><b>Pavyzdys:</b> Jis <b>yra</b> mokytojas.",
+            "no": "<b>Forklaring:</b> Verbet 'å være' i nåtid (3. person entall).<br><b>Synonym:</b> (Beskriver tilstand).<br><b>Eksempel:</b> Han <b>er</b> lærer.",
+            "fa": "<div dir='rtl' style='text-align: right;'><b>توضیح:</b> فعل «بودن» در زمان حال (سوم شخص مفرد).<br><b>مترادف:</b> (فعل ربطی).<br><b>مثال:</b> او یک معلم <b>است</b>.</div>",
+            "pt": "<b>Explicação:</b> O verbo 'ser/estar' no presente (3ª pessoa do singular).<br><b>Sinônimo:</b> (Verbo de ligação).<br><b>Exemplo:</b> Ele <b>é</b> um professor.",
+            "pl": "<b>Wyjaśnienie:</b> Czasownik 'być' w czasie teraźniejszym (3. osoba l. pojedynczej).<br><b>Synonim:</b> (Czasownik łączący).<br><b>Przykład:</b> On <b>jest</b> nauczycielem.",
+            "ro": "<b>Explicație:</b> Verbul 'a fi' la timpul prezent (persoana a 3-a singular).<br><b>Sinonim:</b> (Verb de legătură).<br><b>Exemplu:</b> El <b>este</b> profesor.",
+            "ru": "<b>Объяснение:</b> Глагол 'быть' в настоящем времени (3-е лицо ед.ч.).<br><b>Синоним:</b> является.<br><b>Пример:</b> Он (<b>есть</b>) учитель.",
+            "es": "<b>Explicación:</b> El verbo 'ser/estar' en presente (3ª persona del singular).<br><b>Sinónimo:</b> (Verbo copulativo).<br><b>Ejemplo:</b> Él <b>es</b> profesor.",
+            "sv": "<b>Förklaring:</b> Verbet 'att vara' i nutid (3:e person singular).<br><b>Synonym:</b> (Beskriver tillstånd).<br><b>Exempel:</b> Han <b>är</b> lärare.",
+            "th": "<b>คำอธิบาย:</b> คำกริยา 'เป็น/อยู่/คือ' ในปัจจุบันกาล (บุรุษที่ 3 เอกพจน์)<br><b>คำพ้องความหมาย:</b> (กริยาเชื่อม)<br><b>ตัวอย่าง:</b> เขา<b>เป็น</b>ครู",
+            "de": "<b>Erklärung:</b> Das Verb 'sein' im Präsens (3. Person Singular).<br><b>Synonym:</b> (Kopulaverb).<br><b>Beispiel:</b> Er <b>ist</b> Lehrer.",
+            "uk": "<b>Пояснення:</b> Дієслово 'бути' у теперішньому часі (3-я особа однини).<br><b>Синонім:</b> є.<br><b>Приклад:</b> Він (<b>є</b>) вчителем.",
+            "vi": "<b>Giải thích:</b> Động từ 'thì/là/ở' ở thì hiện tại (ngôi thứ 3 số ít).<br><b>Từ đồng nghĩa:</b> (Động từ liên kết).<br><b>Ví dụ:</b> Anh ấy <b>là</b> một giáo viên."
+        }
+    },
+    { 
+        text: "við", 
+        is_exp: "<b>Útskýring:</b> Persónufornafn í 1. persónu fleirtölu (ég og þú/aðrir). Getur líka verið forsetning (t.d. að tala *við* einhvern). Hér er það fornafnið.<br><b>Samheiti:</b> (hópur sem inniheldur mælanda).<br><b>Dæmi:</b> <b>Við</b> ætlum að læra saman.",
+        translations: {
+            "ar": "<div dir='rtl' style='text-align: right;'><b>الشرح:</b> ضمير المتكلم للجمع (أنا وأنت/آخرون).<br><b>مرادف:</b> نحن.<br><b>مثال:</b> <b>نحن</b> سنقوم بالدراسة معاً.</div>",
+            "da": "<b>Forklaring:</b> Pronomen i 1. person flertal (jeg og dig/andre).<br><b>Synonym:</b> (gruppe inkl. taleren).<br><b>Eksempel:</b> <b>Vi</b> skal lære sammen.",
+            "en": "<b>Explanation:</b> First person plural pronoun (me and you/others).<br><b>Synonym:</b> (group including speaker).<br><b>Example:</b> <b>We</b> are going to study together.",
+            "tl": "<b>Paliwanag:</b> Panghalip na unang panauhang maramihan (ako at ikaw/iba pa).<br><b>Kasingkahulugan:</b> (pangkat kasama ang nagsasalita).<br><b>Halimbawa:</b> <b>Tayo/Kami</b> ay mag-aaral nang magkasama.",
+            "fr": "<b>Explication:</b> Pronom de la première personne du pluriel (moi et toi/d'autres).<br><b>Synonyme:</b> nous.<br><b>Exemple:</b> <b>Nous</b> allons étudier ensemble.",
+            "zh": "<b>解释：</b> 第一人称复数代词（我和你/其他人）。<br><b>同义词：</b> 我们。<br><b>示例：</b> <b>我们</b>要一起学习。",
+            "lv": "<b>Paskaidrojums:</b> Pirmās personas daudzskaitļa vietniekvārds (es un tu/citi).<br><b>Sinonīms:</b> (grupa, kas ietver runātāju).<br><b>Piemērs:</b> <b>Mēs</b> mācīsimies kopā.",
+            "lt": "<b>Paaiškinimas:</b> Pirmojo asmens daugiskaitos įvardis (aš ir tu/kiti).<br><b>Sinonimas:</b> (grupė, kuriai priklauso kalbantysis).<br><b>Pavyzdys:</b> <b>Mes</b> mokysimės kartu.",
+            "no": "<b>Forklaring:</b> Pronomen i 1. person flertall (jeg og du/andre).<br><b>Synonym:</b> (gruppe som inkluderer taleren).<br><b>Eksempel:</b> <b>Vi</b> skal lære sammen.",
+            "fa": "<div dir='rtl' style='text-align: right;'><b>توضیح:</b> ضمیر اول شخص جمع (من و تو/دیگران).<br><b>مترادف:</b> ما.<br><b>مثال:</b> <b>ما</b> با هم درس خواهیم خواند.</div>",
+            "pt": "<b>Explicação:</b> Pronome da primeira pessoa do plural (eu e você/outros).<br><b>Sinônimo:</b> nós.<br><b>Exemplo:</b> <b>Nós</b> vamos estudar juntos.",
+            "pl": "<b>Wyjaśnienie:</b> Zaimek w 1. osobie liczby mnogiej (ja i ty/inni).<br><b>Synonim:</b> my.<br><b>Przykład:</b> <b>My</b> będziemy uczyć się razem.",
+            "ro": "<b>Explicație:</b> Pronume la persoana întâi plural (eu și tu/alții).<br><b>Sinonim:</b> noi.<br><b>Exemplu:</b> <b>Noi</b> vom învăța împreună.",
+            "ru": "<b>Объяснение:</b> Местоимение 1-го лица множественного числа (я и ты/другие).<br><b>Синоним:</b> мы.<br><b>Пример:</b> <b>Мы</b> будем учиться вместе.",
+            "es": "<b>Explicación:</b> Pronombre de primera persona del plural (yo y tú/otros).<br><b>Sinónimo:</b> nosotros.<br><b>Ejemplo:</b> <b>Nosotros</b> vamos a estudiar juntos.",
+            "sv": "<b>Förklaring:</b> Pronomen i 1:a person plural (jag och du/andra).<br><b>Synonym:</b> (grupp inkluderande talaren).<br><b>Exempel:</b> <b>Vi</b> ska studera tillsammans.",
+            "th": "<b>คำอธิบาย:</b> สรรพนามบุรุษที่หนึ่งพหูพจน์ (ฉันและคุณ/คนอื่นๆ)<br><b>คำพ้องความหมาย:</b> พวกเรา<br><b>ตัวอย่าง:</b> <b>พวกเรา</b>จะเรียนด้วยกัน",
+            "de": "<b>Erklärung:</b> Pronomen der 1. Person Plural (ich und du/andere).<br><b>Synonym:</b> wir.<br><b>Beispiel:</b> <b>Wir</b> werden zusammen lernen.",
+            "uk": "<b>Пояснення:</b> Займенник 1-ї особи множини (я і ти/інші).<br><b>Синонім:</b> ми.<br><b>Приклад:</b> <b>Ми</b> будемо вчитися разом.",
+            "vi": "<b>Giải thích:</b> Đại từ ngôi thứ nhất số nhiều (tôi và bạn/những người khác).<br><b>Từ đồng nghĩa:</b> chúng tôi/chúng ta.<br><b>Ví dụ:</b> <b>Chúng ta</b> sẽ học cùng nhau."
+        }
+    },
+    { 
+        text: "sem", 
+        is_exp: "<b>Útskýring:</b> Tilvísunarfornafn eða samtenging notuð til að tengja aukasetningu við aðalsetningu (eins og 'hver' eða 'sem').<br><b>Samheiti:</b> (notað til að vísa til baka).<br><b>Dæmi:</b> Þetta er bókin <b>sem</b> ég var að lesa.",
+        translations: {
+            "ar": "<div dir='rtl' style='text-align: right;'><b>الشرح:</b> اسم موصول أو رابط لربط جملة بجملة أخرى (الذي/التي).<br><b>مرادف:</b> الذي.<br><b>مثال:</b> هذا هو الكتاب <b>الذي</b> كنت أقرؤه.</div>",
+            "da": "<b>Forklaring:</b> Henførende stedord brugt til at binde sætninger sammen.<br><b>Synonym:</b> der/som.<br><b>Eksempel:</b> Dette er bogen, <b>som</b> jeg læste.",
+            "en": "<b>Explanation:</b> Relative pronoun or conjunction used to link clauses (which/that/who).<br><b>Synonym:</b> that/which.<br><b>Example:</b> This is the book <b>that</b> I was reading.",
+            "tl": "<b>Paliwanag:</b> Panghalip pamanggit na ginagamit upang mag-ugnay ng mga sugnay.<br><b>Kasingkahulugan:</b> na.<br><b>Halimbawa:</b> Ito ang aklat <b>na</b> binabasa ko.",
+            "fr": "<b>Explication:</b> Pronom relatif ou conjonction utilisé pour lier des propositions (qui/que).<br><b>Synonyme:</b> qui/que.<br><b>Exemple:</b> C'est le livre <b>que</b> je lisais.",
+            "zh": "<b>解释：</b> 关系代词或连词，用于连接从句（那个/谁）。<br><b>同义词：</b> 那个。<br><b>示例：</b> 这就是我刚才在读的<b>那</b>本书。",
+            "lv": "<b>Paskaidrojums:</b> Attieksmes vietniekvārds, ko izmanto teikumu savienošanai.<br><b>Sinonīms:</b> kurš/kas.<br><b>Piemērs:</b> Šī ir grāmata, <b>kuru</b> es lasīju.",
+            "lt": "<b>Paaiškinimas:</b> Santykinis įvardis, naudojamas sakiniams sujungti.<br><b>Sinonimas:</b> kuris/kuri.<br><b>Pavyzdys:</b> Tai knyga, <b>kurią</b> aš skaičiau.",
+            "no": "<b>Forklaring:</b> Relativt pronomen brukt til å binde sammen setninger.<br><b>Synonym:</b> som.<br><b>Eksempel:</b> Dette er boken <b>som</b> jeg leste.",
+            "fa": "<div dir='rtl' style='text-align: right;'><b>توضیح:</b> ضمیر موصولی برای پیوند دادن جملات (که).<br><b>مترادف:</b> که.<br><b>مثال:</b> این کتابی است <b>که</b> من می‌خواندم.</div>",
+            "pt": "<b>Explicação:</b> Pronome relativo ou conjunção usado para ligar orações (que/qual).<br><b>Sinônimo:</b> que.<br><b>Exemplo:</b> Este é o livro <b>que</b> eu estava lendo.",
+            "pl": "<b>Wyjaśnienie:</b> Zaimek względny używany do łączenia zdań.<br><b>Synonim:</b> który/co.<br><b>Przykład:</b> To jest książka, <b>którą</b> czytałem.",
+            "ro": "<b>Explicație:</b> Pronume relativ folosit pentru a lega propoziții (care).<br><b>Sinonim:</b> care.<br><b>Exemplu:</b> Aceasta este cartea <b>pe care</b> o citeam.",
+            "ru": "<b>Объяснение:</b> Относительное местоимение для связи предложений.<br><b>Синоним:</b> который/что.<br><b>Пример:</b> Это книга, <b>которую</b> я читал.",
+            "es": "<b>Explicación:</b> Pronombre relativo o conjunción utilizado para unir oraciones (que/quien).<br><b>Sinónimo:</b> que.<br><b>Ejemplo:</b> Este es el libro <b>que</b> estaba leyendo.",
+            "sv": "<b>Förklaring:</b> Relativt pronomen som används för att binda samman satser.<br><b>Synonym:</b> som/vilken.<br><b>Exempel:</b> Detta är boken <b>som</b> jag läste.",
+            "th": "<b>คำอธิบาย:</b> ประพันธสรรพนามที่ใช้เชื่อมประโยคย่อย (ที่/ซึ่ง/อัน)<br><b>คำพ้องความหมาย:</b> ที่<br><b>ตัวอย่าง:</b> นี่คือหนังสือ<b>ที่</b>ฉันกำลังอ่าน",
+            "de": "<b>Erklärung:</b> Relativpronomen zur Verbindung von Sätzen.<br><b>Synonym:</b> der/die/das/welcher.<br><b>Beispiel:</b> Das ist das Buch, <b>das</b> ich gelesen habe.",
+            "uk": "<b>Пояснення:</b> Відносний займенник для зв'язку речень.<br><b>Синонім:</b> який/що.<br><b>Приклад:</b> Це книга, <b>яку</b> я читав.",
+            "vi": "<b>Giải thích:</b> Đại từ quan hệ dùng để liên kết các mệnh đề (cái mà/người mà).<br><b>Từ đồng nghĩa:</b> cái mà.<br><b>Ví dụ:</b> Đây là cuốn sách <b>mà</b> tôi đang đọc."
+        }
+    },
+    { 
+        text: "að", 
+        is_exp: "<b>Útskýring:</b> Nafnháttarmerki eða samtenging, mjög algengt á undan sagnorðum.<br><b>Samheiti:</b> (táknar oft að eitthvað sé í gangi eða áætlað).<br><b>Dæmi:</b> Ég er <b>að</b> læra.",
+        translations: {
+            "ar": "<div dir='rtl' style='text-align: right;'><b>الشرح:</b> علامة المصدر أو أداة ربط، شائعة جداً قبل الأفعال.<br><b>مرادف:</b> أن (للمصدر).<br><b>مثال:</b> أنا (في حالة) <b>أن</b> أدرس.</div>",
+            "da": "<b>Forklaring:</b> Navnemådemærke eller bindeord, meget almindeligt foran udsagnsord.<br><b>Synonym:</b> at.<br><b>Eksempel:</b> Jeg er ved <b>at</b> lære.",
+            "en": "<b>Explanation:</b> Infinitive marker or conjunction, very common before verbs.<br><b>Synonym:</b> to (infinitive).<br><b>Example:</b> I am (about) <b>to</b> study.",
+            "tl": "<b>Paliwanag:</b> Infinitive marker o pangatnig, napakakaraniwan bago ang mga pandiwa.<br><b>Kasingkahulugan:</b> na/upang.<br><b>Halimbawa:</b> Ako ay nag-aaral (walang direktang salin para sa 'að' dito, ipinapakita ang aksyon).",
+            "fr": "<b>Explication:</b> Marque de l'infinitif ou conjonction, très fréquente devant les verbes.<br><b>Synonyme:</b> à/de (pour l'infinitif).<br><b>Exemple:</b> Je suis en train <b>d'</b>étudier.",
+            "zh": "<b>解释：</b> 不定式符号或连词，在动词前很常见。<br><b>同义词：</b> 去（做某事）。<br><b>示例：</b> 我正在学习（'að' 类似英语中的 'to'）。",
+            "lv": "<b>Paskaidrojums:</b> Nenoteiksmes marķieris vai saiklis, ļoti izplatīts pirms darbības vārdiem.<br><b>Sinonīms:</b> (nenoteiksmes forma).<br><b>Piemērs:</b> Es mācos (norāda uz darbību).",
+            "lt": "<b>Paaiškinimas:</b> Bendraties rodiklis arba jungtukas, labai dažnas prieš veiksmažodžius.<br><b>Sinonimas:</b> (bendraties forma).<br><b>Pavyzdys:</b> Aš mokausi.",
+            "no": "<b>Forklaring:</b> Infinitivsmerke eller konjunksjon, svært vanlig foran verb.<br><b>Synonym:</b> å.<br><b>Eksempel:</b> Jeg holder på med <b>å</b> lære.",
+            "fa": "<div dir='rtl' style='text-align: right;'><b>توضیح:</b> نشانه مصدر یا حرف ربط، بسیار رایج قبل از افعال.<br><b>مترادف:</b> (نشان‌دهنده انجام کار).<br><b>مثال:</b> من در حال یادگیری هستم (برای ساختار استمراری استفاده می‌شود).</div>",
+            "pt": "<b>Explicação:</b> Marcador de infinitivo ou conjunção, muito comum antes de verbos.<br><b>Sinônimo:</b> a/para (no infinitivo).<br><b>Exemplo:</b> Eu estou <b>a</b> aprender.",
+            "pl": "<b>Wyjaśnienie:</b> Wykładnik bezokolicznika lub spójnik, bardzo powszechny przed czasownikami.<br><b>Synonim:</b> żeby/aby.<br><b>Przykład:</b> Uczę się (wskazuje na czynność ciągłą).",
+            "ro": "<b>Explicație:</b> Marcă a infinitivului sau conjuncție, foarte comună înaintea verbelor.<br><b>Sinonim:</b> a (pentru infinitiv).<br><b>Exemplu:</b> Eu învăț (arată o acțiune continuă).",
+            "ru": "<b>Объяснение:</b> Маркер инфинитива или союз, очень часто встречается перед глаголами.<br><b>Синоним:</b> чтобы/что.<br><b>Пример:</b> Я учусь (показывает продолжительное действие).",
+            "es": "<b>Explicación:</b> Marcador de infinitivo o conjunción, muy común antes de los verbos.<br><b>Sinónimo:</b> a/que.<br><b>Ejemplo:</b> Estoy estudiando (marca la acción continua).",
+            "sv": "<b>Förklaring:</b> Infinitivmärke eller konjunktion, mycket vanligt framför verb.<br><b>Synonym:</b> att.<br><b>Exempel:</b> Jag håller på <b>att</b> lära mig.",
+            "th": "<b>คำอธิบาย:</b> เครื่องหมายบอกรูปกริยาไม่แท้ (infinitive) หรือคำสันธาน มักพบหน้ากริยา<br><b>คำพ้องความหมาย:</b> ที่จะ<br><b>ตัวอย่าง:</b> ฉันกำลังเรียน (ใช้เพื่อแสดงอาการกระทำ)",
+            "de": "<b>Erklärung:</b> Infinitivpartikel oder Konjunktion, sehr häufig vor Verben.<br><b>Synonym:</b> zu.<br><b>Beispiel:</b> Ich bin dabei <b>zu</b> lernen.",
+            "uk": "<b>Пояснення:</b> Маркер інфінітива або сполучник, дуже часто зустрічається перед дієсловами.<br><b>Синонім:</b> щоб/що.<br><b>Приклад:</b> Я вчуся (вказує на тривалу дію).",
+            "vi": "<b>Giải thích:</b> Dấu hiệu nhận biết động từ nguyên mẫu hoặc từ nối, rất phổ biến trước động từ.<br><b>Từ đồng nghĩa:</b> để.<br><b>Ví dụ:</b> Tôi đang học."
+        }
+    }
+];
+
+let userScores = new Array(exerciseData.length).fill(null);
+let userSpoken = new Array(exerciseData.length).fill("");
+
+let currentIndex = 0;
+let recognition;
+let isRecording = false;
+let autoAdvanceTimer = null;
+let hasDownloadedCert = false; 
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'is-IS';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    
+    recognition.onend = () => {
+        isRecording = false;
+        const btn = document.getElementById('record-btn');
+        if (btn) {
+            btn.innerText = "🎤 Tala";
+            btn.classList.remove('recording');
+        }
+        
+        const resDiv = document.getElementById('result');
+        if (resDiv && resDiv.innerText === "Hlusta...") {
+            resDiv.innerText = "";
+        }
+    };
+} else {
+    alert("Þessi vafri styður ekki talgreiningu. Notaðu Chrome eða Edge á tölvu.");
+}
+
+window.onload = () => { 
+    updateUI(); 
+};
+
+function updateProgress() {
+    let correctCount = 0;
+    for (let i = 0; i < userScores.length; i++) {
+        if (userScores[i] === 100) {
+            correctCount++;
+        }
+    }
+    const percent = (correctCount / exerciseData.length) * 100;
+    
+    const progressBar = document.getElementById('progress-bar');
+    if(progressBar) {
+        progressBar.style.width = percent + '%';
+    }
+    return correctCount;
+}
+
+function findNextUnfinished() {
+    for (let i = 0; i < userScores.length; i++) {
+        if (userScores[i] !== 100) {
+            currentIndex = i;
+            break;
+        }
+    }
+    
+    document.getElementById('app').innerHTML = `
+        <h1>Námsorð - 1 - 10 algengustu</h1>
+        <div class="progress-container"><div id="progress-bar"></div></div>
+        
+        <div class="lang-selector">
+            <label for="languageSelect"><b>🌍 Veldu tungumál:</b></label>
+            <select id="languageSelect" onchange="updateUI()">
+                <option value="ar">Arabíska – العربية</option>
+                <option value="da">Danska – Dansk</option>
+                <option value="en" selected>Enska – English</option>
+                <option value="tl">Filippseyska – Tagalog / Filipino</option>
+                <option value="fr">Franska – Français</option>
+                <option value="zh">Kínverska – 中文</option>
+                <option value="lv">Lettneska – Latviešu</option>
+                <option value="lt">Litháíska – Lietuvių</option>
+                <option value="no">Norska – Norsk</option>
+                <option value="fa">Persneska – فارسی</option>
+                <option value="pt">Portúgalska – Português</option>
+                <option value="pl">Pólska – Polski</option>
+                <option value="ro">Rúmenska – Română</option>
+                <option value="ru">Rússneska – Русский</option>
+                <option value="es">Spænska – Español</option>
+                <option value="sv">Sænska – Svenska</option>
+                <option value="th">Tælenska – ภาษาไทย</option>
+                <option value="de">Þýska – Deutsch</option>
+                <option value="uk">Úkraínska – Українська</option>
+                <option value="vi">Víetnamska – Tiếng Việt</option>
+            </select>
+        </div>
+
+        <div id="counter"></div>
+        <div id="target"></div>
+        <div id="is-explanation"></div>
+        <br>
+        <button id="record-btn" class="btn" onclick="toggleRecord()">🎤 Tala</button>
+        <div id="spoken"></div>
+        <div id="result"></div>
+        <div id="media-box"></div>
+        <div class="nav-btns">
+            <button class="btn" style="background-color: #5f6368;" onclick="prevExercise()">⬅️ Fyrri</button>
+            <button class="btn" style="background-color: #5f6368;" onclick="nextExercise()">Næsta ➡️</button>
+        </div>
+        <div class="feedback-note">
+            Vinsamlegast sendið ábendingar á <a href="mailto:dgu@fb.is">dgu@fb.is</a>
+        </div>
+    `;
+    updateUI();
+}
+
+function updateUI() {
+    clearTimeout(autoAdvanceTimer); 
+    const correctCount = updateProgress();
+
+    if (currentIndex >= exerciseData.length) {
+        if (correctCount === exerciseData.length) {
+            document.getElementById('app').innerHTML = `
+                <div class="progress-container"><div id="progress-bar" style="width: 100%;"></div></div>
+                <h1 style="color: #34a853; font-size: 2.5em;">Frábært! Þú náðir 100% árangri! 🎉</h1>
+                <p style="font-size: 1.2em; color: #555;">Skrifaðu nafnið þitt hér að neðan til að sækja viðurkenningarskjalið þitt.</p>
+                <input type="text" id="studentName" placeholder="Skrifaðu nafnið þitt hér" autocomplete="off" ${hasDownloadedCert ? 'disabled' : ''}><br>
+                <button id="cert-btn" class="btn" style="background-color: ${hasDownloadedCert ? '#5f6368' : '#1a73e8'}; font-size: 1.5em; padding: 15px 30px; margin-top: 10px; cursor: ${hasDownloadedCert ? 'not-allowed' : 'pointer'}; opacity: ${hasDownloadedCert ? '0.7' : '1'};" onclick="downloadCert()" ${hasDownloadedCert ? 'disabled' : ''}>
+                    ${hasDownloadedCert ? '✅ Skjal sótt' : '🏆 Sækja viðurkenningarskjal'}
+                </button>
+                <br><br>
+                <button class="btn" style="background-color: #5f6368;" onclick="location.reload()">🔄 Byrja nýja umferð</button>
+                <div class="feedback-note">
+                    Vinsamlegast sendið ábendingar á <a href="mailto:dgu@fb.is">dgu@fb.is</a>
+                </div>
+            `;
+        } else {
+            document.getElementById('app').innerHTML = `
+                <div class="progress-container"><div id="progress-bar" style="width: ${(correctCount/exerciseData.length)*100}%;"></div></div>
+                <h1 style="color: #fbbc05; font-size: 2em;">Þú ert næstum því búin(n)!</h1>
+                <p style="font-size: 1.2em;">Þú hefur klárað ${correctCount} af ${exerciseData.length} orðum með 100% árangri.</p>
+                <p style="font-size: 1.1em; color: #555;">Farðu til baka og reyndu aftur við þau orð sem vantaði upp á til að fá skjalið.</p>
+                <button class="btn" style="background-color: #fbbc05; color: #000;" onclick="findNextUnfinished()">➡️ Fara á orð sem vantar</button>
+                <div class="feedback-note">
+                    Vinsamlegast sendið ábendingar á <a href="mailto:dgu@fb.is">dgu@fb.is</a>
+                </div>
+            `;
+        }
+        return;
+    }
+
+    const curr = exerciseData[currentIndex];
+    
+    const langSelect = document.getElementById('languageSelect');
+    const selectedLang = langSelect ? langSelect.value : 'en';
+
+    document.getElementById('target').innerHTML = curr.text;
+    document.getElementById('is-explanation').innerHTML = curr.is_exp;
+    document.getElementById('counter').innerText = `Orð ${currentIndex + 1} af ${exerciseData.length}`;
+    
+    document.getElementById('media-box').innerHTML = curr.translations[selectedLang] || "Þýðing ekki til / Translation missing";
+
+    const savedScore = userScores[currentIndex];
+    const savedText = userSpoken[currentIndex];
+
+    if (savedScore !== null) {
+        document.getElementById('result').innerText = `Einkunn: ${savedScore}%`;
+        document.getElementById('spoken').innerText = `Þú sagðir: "${savedText}"`;
+    } else {
+        document.getElementById('result').innerText = "";
+        document.getElementById('spoken').innerText = "";
+    }
+}
+
+function nextExercise() {
+    currentIndex++;
+    updateUI();
+}
+
+function prevExercise() {
+    if (currentIndex > 0) {
+        currentIndex--;
+        updateUI();
+    }
+}
+
+function toggleRecord() {
+    if (!recognition) return;
+
+    const btn = document.getElementById('record-btn');
+    if (isRecording) {
+        recognition.stop();
+    } else {
+        try {
+            recognition.start();
+            isRecording = true;
+            btn.innerText = "🛑 Hlusta...";
+            btn.classList.add('recording');
+            document.getElementById('result').innerText = "Hlusta...";
+            document.getElementById('spoken').innerText = "";
+        } catch(e) {
+            console.log("Villa í upptöku: " + e);
+        }
+    }
+}
+
+if (recognition) {
+    recognition.onresult = (event) => {
+        let spoken = event.results[0][0].transcript;
+        spoken = spoken.trim().toLowerCase(); 
+
+        document.getElementById('spoken').innerText = `Þú sagðir: "${spoken}"`;
+        
+        const targetWord = exerciseData[currentIndex].text.toLowerCase();
+        
+        let score = (spoken === targetWord) ? 100 : 0;
+        
+        if (spoken.replace(/[.,/#!$%^&*;:{}=\-_`~()]/g,"").trim() === targetWord) {
+            score = 100;
+        }
+        
+        document.getElementById('result').innerText = `Einkunn: ${score}%`;
+
+        userScores[currentIndex] = score;
+        userSpoken[currentIndex] = spoken;
+        
+        updateProgress();
+
+        if (score === 100) {
+            autoAdvanceTimer = setTimeout(() => {
+                nextExercise();
+            }, 1000); 
+        }
+    };
+}
+
+function downloadCert() {
+    if (hasDownloadedCert) return; 
+
+    const studentNameInput = document.getElementById('studentName');
+    const studentName = studentNameInput ? studentNameInput.value.trim() : "";
+    
+    if (studentName === "") {
+        alert("Vinsamlegast skrifaðu nafnið þitt fyrst!");
+        return;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 900;
+    canvas.height = 600;
+    const ctx = canvas.getContext('2d');
+    
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.strokeStyle = '#1a73e8';
+    ctx.lineWidth = 15;
+    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+
+    ctx.strokeStyle = '#fbbc05';
+    ctx.lineWidth = 5;
+    ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
+    
+    ctx.fillStyle = '#1a73e8';
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 50px Arial';
+    ctx.fillText('Viðurkenning', canvas.width / 2, 140);
+    
+    ctx.fillStyle = '#333333';
+    ctx.font = '24px Arial';
+    ctx.fillText('Þetta skjal staðfestir að', canvas.width / 2, 220);
+    
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 45px Arial';
+    ctx.fillText(studentName, canvas.width / 2, 290);
+    
+    ctx.fillStyle = '#333333';
+    ctx.font = '24px Arial';
+    ctx.fillText('hefur lokið æfingunni með glæsibrag:', canvas.width / 2, 360);
+
+    ctx.fillStyle = '#1a73e8';
+    ctx.font = 'bold 26px Arial';
+    ctx.fillText('Námsorð - 1 - 10 algengustu', canvas.width / 2, 420);
+    
+    ctx.fillStyle = '#34a853';
+    ctx.font = 'italic 28px Arial';
+    ctx.fillText('Frábær árangur! Haltu áfram að æfa þig.', canvas.width / 2, 490);
+
+    const dateString = new Date().toLocaleDateString('is-IS');
+    ctx.fillStyle = '#666666';
+    ctx.font = '18px Arial';
+    ctx.fillText('Dagsetning: ' + dateString, canvas.width / 2, 540);
+    
+    const link = document.createElement('a');
+    link.download = `Vidurkenning_${studentName.replace(/\s+/g, '_')}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    
+    hasDownloadedCert = true;
+    const btn = document.getElementById('cert-btn');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = "✅ Skjal sótt";
+        btn.style.backgroundColor = "#5f6368";
+        btn.style.cursor = "not-allowed";
+        btn.style.opacity = "0.7";
+    }
+    if (studentNameInput) {
+        studentNameInput.disabled = true;
+    }
+}
+</script>
+
+</body>
+</html>
